@@ -1,0 +1,19 @@
+project_name: Xenium Prime mouse ileum format/QC demo
+dataset_kind: technical_demo
+input_zip: data/raw/Xenium_Prime_MultiCellSeg_Mouse_Ileum_tiny_outs.zip
+output_dir: results/demo_mouse_ileum
+random_seed: 17
+min_transcripts: 1
+min_features: 1
+max_control_fraction: 0.05
+k_neighbors: 8
+n_clusters: 6
+n_permutations: 100
+markers:
+  Epithelial: [Epcam, Krt8, Krt18, Krt19]
+  Goblet: [Muc2, Spink4, Clca1, Agr2]
+  Enterocyte: [Alpi, Apoa1, Fabp1, Slc26a3]
+  Immune: [Ptprc, Cd3d, Cd79a, Lyz2]
+  Fibroblast: [Col1a1, Col1a2, Dcn, Col3a1]
+  Endothelial: [Pecam1, Vwf, Kdr, Emcn]
+  Smooth_muscle: [Acta2, Tagln, Myh11, Des]

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xenium-qc-atlas"
+version = "0.1.0"
+description = "Transcript-, segmentation-, and biology-aware QC plus spatial neighborhood analysis for Xenium."
+requires-python = ">=3.10"
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "scipy>=1.11",
+  "scikit-learn>=1.4",
+  "matplotlib>=3.8",
+  "pyarrow>=15",
+  "h5py>=3.10",
+  "PyYAML>=6",
+]
+
+[project.scripts]
+xenium-showcase = "xenium_showcase.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

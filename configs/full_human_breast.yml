@@ -1,0 +1,21 @@
+project_name: Xenium human breast cancer showcase
+dataset_kind: biological_showcase
+# Set this to a downloaded 10x Xenium output bundle or extracted outs directory.
+input_zip: data/raw/human_breast_xenium_outs.zip
+output_dir: results/human_breast
+random_seed: 17
+min_transcripts: 20
+min_features: 10
+max_control_fraction: 0.03
+k_neighbors: 12
+n_clusters: 12
+n_permutations: 500
+markers:
+  Tumor_epithelial: [EPCAM, KRT8, KRT18, KRT19, TACSTD2]
+  Myoepithelial: [ACTA2, KRT14, KRT15, MYH11, CNN1]
+  T_cell: [PTPRC, CD3D, CD3E, IL7R, CD8A]
+  B_cell: [CD79A, MS4A1, CD37, MZB1]
+  Myeloid: [LST1, ITGAX, C1QC, MMP12]
+  Fibroblast: [COL1A1, COL3A1, DCN, POSTN, GJB2]
+  Endothelial: [VWF, PECAM1, KDR, EMCN]
+

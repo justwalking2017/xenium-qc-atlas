@@ -1,0 +1,16 @@
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+results/**/input_cache/
+results/**/*cells_with_qc_and_labels.csv.gz
+results/**/*montage.png
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.DS_Store
+build/
+*.pptx.inspect.ndjson
+Xenium_QC_Atlas_Showcase/
+agent.md

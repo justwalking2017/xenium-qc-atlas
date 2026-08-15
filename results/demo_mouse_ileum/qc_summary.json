@@ -1,0 +1,12 @@
+{
+  "cells_total": 36,
+  "cells_pass_qc": 20,
+  "pass_rate": 0.5555555555555556,
+  "median_transcripts": 1.0,
+  "median_features": 1.0,
+  "median_control_fraction": 0.0,
+  "transcript_assignment_rate": 0.5884130982367758,
+  "median_qv": 3.5,
+  "segmentation_outliers": 16,
+  "dataset_kind": "technical_demo"
+}

@@ -1,0 +1,16 @@
+name: xenium-showcase
+channels: [conda-forge]
+dependencies:
+  - python=3.11
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - pyarrow
+  - h5py
+  - pyyaml
+  - pip
+  - pip:
+      - -e .
+

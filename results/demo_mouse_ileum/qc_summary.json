@@ -6,6 +6,9 @@
   "median_features": 1.0,
   "median_control_fraction": 0.0,
   "transcript_assignment_rate": 0.5884130982367758,
+  "q20_assignment_rate": 0.8648148148148148,
+  "q20_transcript_fraction": 0.27204030226700254,
+  "transcripts_total": 1985,
   "median_qv": 3.5,
   "segmentation_outliers": 16,
   "dataset_kind": "technical_demo"

@@ -1,3 +1,17 @@
+# v0.2.0 — Full breast-cancer biological run
+
+This release upgrades the project from a technical smoke test to a complete biological Xenium analysis. It adds:
+
+- CRC-validated analysis of the full official 10x FFPE human breast IDC output bundle;
+- streaming QC over 86.8 million decoded transcripts;
+- results for 574,852 segmented cells and 561,585 QC-passing cells;
+- full-section cell identities, neighborhood enrichment, and Moran's I outputs;
+- a myoepithelial-proximity application with an explicit pathology-proxy caveat;
+- a new editable full-results PowerPoint deck;
+- memory-efficient transcript parquet scanning and vectorized permutation counts.
+
+The raw 22.7 GiB archive is not redistributed. Reproduction uses the official 10x URL and validates the expected byte length before analysis.
+
 # v0.1.0 — Xenium QC-to-niche showcase
 
 This release demonstrates practical Xenium analysis at three levels:
@@ -9,4 +23,3 @@ This release demonstrates practical Xenium analysis at three levels:
 The bundled demo configuration targets the official 10x Xenium Prime mouse ileum tiny test dataset and is strictly a pipeline smoke test. The full breast-cancer configuration is intended for biological interpretation after downloading a complete public output bundle.
 
 Reproducibility assets include pinned environment metadata, an MD5-verified download script, deterministic seeds, machine-readable QC outputs, figures, and an editable PowerPoint summary.
-

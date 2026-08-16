@@ -44,6 +44,31 @@ results/<profile>/
 └── neighborhood_enrichment_z.csv
 ```
 
+## Executed full breast-cancer run
+
+The complete 10x FFPE human breast IDC output bundle was downloaded, CRC-validated, and analyzed end to end. The checked-in results were generated from the full biological sample, not the trimmed format fixture:
+
+| Metric | Result |
+|---|---:|
+| Segmented cells | 574,852 |
+| Cells passing configured QC | 561,585 (97.7%) |
+| Decoded transcripts in transcript parquet | 86,844,040 |
+| Q20 transcript fraction | 78.5% |
+| Median transcripts / cell | 105 |
+| Median detected genes / cell | 46 |
+| Segmentation geometry outliers | 11,562 |
+
+Marker-guided annotation recovered 316,693 tumor epithelial, 133,590 fibroblast, 33,592 myoepithelial, 33,013 T, 24,265 endothelial, 9,306 myeloid, and 7,793 B cells. Spatially coherent genes included `CLIC6`, `SERPINA3`, `GATA3`, `PGR`, `KRT14`, `LUM`, and `POSTN`.
+
+The myoepithelial-proximity analysis is explicitly treated as a computational nearest-cell proxy. It is not a substitute for pathology-defined DCIS or invasive boundaries.
+
+Run the same full profile after downloading the official bundle:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/download_full_breast.ps1
+xenium-showcase --config configs/full_human_breast.yml
+```
+
 ## QC decision framework
 
 | Layer | Metric | Interpretation | Action |
@@ -87,4 +112,3 @@ This direction follows recent Xenium applications emphasizing treatment-responsi
 ## License and data provenance
 
 Code is MIT licensed. 10x public datasets remain under their stated CC BY 4.0 terms and are not redistributed in this repository. Cite 10x Genomics and the source dataset when publishing figures.
-

@@ -32,7 +32,7 @@ def _pick(df: pd.DataFrame, *candidates: str) -> str:
     raise KeyError(f"None of {candidates} found in {list(df.columns)}")
 
 
-def analyze(cells, transcripts, matrix, barcodes, genes, feature_types, metrics, cfg) -> AnalysisResult:
+def analyze(cells, transcript_qc, matrix, barcodes, genes, feature_types, metrics, cfg) -> AnalysisResult:
     cells = cells.copy()
     id_col = _pick(cells, "cell_id", "barcode")
     x_col = _pick(cells, "x_centroid", "x_centroid_um", "x")
@@ -89,14 +89,23 @@ def analyze(cells, transcripts, matrix, barcodes, genes, feature_types, metrics,
     graph = ((graph + graph.T) > 0).astype(float).tocsr()
 
     labels = sorted(cq["cell_type"].unique())
-    obs = pd.crosstab(pd.Series(np.repeat(cq["cell_type"].to_numpy(), k)), pd.Series(cq["cell_type"].to_numpy()[indices.ravel()])).reindex(index=labels, columns=labels, fill_value=0)
+    label_to_code = {label: i for i, label in enumerate(labels)}
+    codes = cq["cell_type"].map(label_to_code).to_numpy(dtype=np.int32)
+    n_labels = len(labels)
+    source_codes = np.repeat(codes, k)
+    target_index = indices.ravel()
+    obs_array = np.bincount(
+        source_codes * n_labels + codes[target_index], minlength=n_labels**2
+    ).reshape(n_labels, n_labels)
     rng = np.random.default_rng(cfg["random_seed"])
     null = np.zeros((cfg["n_permutations"], len(labels), len(labels)))
-    base = cq["cell_type"].to_numpy()
     for p in range(cfg["n_permutations"]):
-        shuffled = rng.permutation(base)
-        null[p] = pd.crosstab(pd.Series(np.repeat(shuffled, k)), pd.Series(shuffled[indices.ravel()])).reindex(index=labels, columns=labels, fill_value=0).to_numpy()
-    z = (obs.to_numpy() - null.mean(0)) / np.maximum(null.std(0), 1)
+        shuffled = rng.permutation(codes)
+        null[p] = np.bincount(
+            np.repeat(shuffled, k) * n_labels + shuffled[target_index],
+            minlength=n_labels**2,
+        ).reshape(n_labels, n_labels)
+    z = (obs_array - null.mean(0)) / np.maximum(null.std(0), 1)
     neighborhood = pd.DataFrame(z, index=labels, columns=labels)
 
     # Moran's I on expressed genes: an interpretable spatial-coherence check and application output.
@@ -109,15 +118,22 @@ def analyze(cells, transcripts, matrix, barcodes, genes, feature_types, metrics,
     gene_stats = pd.DataFrame(gene_rows, columns=["gene", "mean_log1p", "variance", "morans_i"]).sort_values("morans_i", ascending=False)
 
     cq["pc1"] = embedding[:, 0]; cq["pc2"] = embedding[:, 1]
+    myo_mask = cq["cell_type"].eq("Myoepithelial").to_numpy()
+    if myo_mask.any():
+        myo_nn = NearestNeighbors(n_neighbors=1).fit(coords[myo_mask])
+        cq["distance_to_myoepithelial_um"] = myo_nn.kneighbors(coords, return_distance=True)[0].ravel()
+    else:
+        cq["distance_to_myoepithelial_um"] = np.nan
     cells.loc[cq.index, cq.columns] = cq
-    qv_col = "qv" if "qv" in transcripts.columns else None
-    assigned_col = "cell_id" if "cell_id" in transcripts.columns else None
-    assigned = float((transcripts[assigned_col].astype(str) != "UNASSIGNED").mean()) if assigned_col else np.nan
     qc_summary = {
         "cells_total": int(len(cells)), "cells_pass_qc": int(pass_qc.sum()), "pass_rate": float(pass_qc.mean()),
         "median_transcripts": float(np.median(totals)), "median_features": float(np.median(detected)),
-        "median_control_fraction": float(np.median(cells["control_fraction"])), "transcript_assignment_rate": assigned,
-        "median_qv": float(transcripts[qv_col].median()) if qv_col else np.nan,
+        "median_control_fraction": float(np.median(cells["control_fraction"])),
+        "transcript_assignment_rate": transcript_qc["assignment_rate_all"],
+        "q20_assignment_rate": transcript_qc["assignment_rate_q20"],
+        "q20_transcript_fraction": transcript_qc["q20_fraction"],
+        "transcripts_total": transcript_qc["transcripts_total"],
+        "median_qv": transcript_qc["median_qv"],
         "segmentation_outliers": int(cells["segmentation_outlier"].sum()),
     }
     return AnalysisResult(cells, embedding, graph, gene_stats, neighborhood, qc_summary)

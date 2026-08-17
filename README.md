@@ -26,6 +26,17 @@ The paper suggested in the project brief, **Moses et al., Nature Methods (2024)*
 
 ## Quick start
 
+For the complete Prime 5K breast-cancer workflow, download and run:
+
+```powershell
+.\scripts\download_prime5k_breast.ps1
+conda run -n xenium-qc-atlas xenium-showcase --config configs\prime5k_human_breast.yml
+```
+
+This profile downloads the official 38.17 GiB output bundle, selectively extracts
+the files required for computation, and writes a self-contained QC + analysis
+report to `results/human_breast_prime5k/xenium_prime5k_qc_analysis_report.html`.
+
 ```powershell
 conda env create -f environment.yml
 conda activate xenium-showcase

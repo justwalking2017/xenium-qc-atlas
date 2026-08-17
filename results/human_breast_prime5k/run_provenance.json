@@ -1,0 +1,137 @@
+{
+  "dataset": "Xenium Prime 5K FFPE human breast cancer",
+  "source": "https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer",
+  "input": "data/raw/Xenium_Prime_Breast_Cancer_FFPE_outs.zip",
+  "generated_utc": "2026-08-17T03:03:14.663819+00:00",
+  "random_seed": 17,
+  "configuration": {
+    "project_name": "Xenium Prime 5K FFPE human breast cancer",
+    "dataset_kind": "biological_showcase",
+    "dataset_url": "https://www.10xgenomics.com/datasets/xenium-prime-ffpe-human-breast-cancer",
+    "input_zip": "data/raw/Xenium_Prime_Breast_Cancer_FFPE_outs.zip",
+    "output_dir": "results/human_breast_prime5k",
+    "random_seed": 17,
+    "min_transcripts": 20,
+    "min_features": 10,
+    "max_control_fraction": 0.03,
+    "min_annotation_score": 0.05,
+    "min_annotation_margin": 0.01,
+    "max_fit_cells": 100000,
+    "max_graph_cells": 200000,
+    "k_neighbors": 12,
+    "n_clusters": 18,
+    "n_permutations": 50,
+    "markers": {
+      "Luminal_tumor": [
+        "EPCAM",
+        "KRT8",
+        "KRT18",
+        "KRT19",
+        "MSLN",
+        "MUC1",
+        "CEACAM6",
+        "TACSTD2"
+      ],
+      "Basal_tumor": [
+        "KRT5",
+        "KRT14",
+        "KRT17",
+        "KRT6A",
+        "TP63",
+        "EGFR"
+      ],
+      "Myoepithelial": [
+        "ACTA2",
+        "KRT14",
+        "KRT15",
+        "MYH11",
+        "CNN1",
+        "TAGLN"
+      ],
+      "Cycling": [
+        "MKI67",
+        "TOP2A",
+        "UBE2C",
+        "CENPF",
+        "STMN1"
+      ],
+      "T_cell": [
+        "PTPRC",
+        "CD3D",
+        "CD3E",
+        "TRBC1",
+        "IL7R",
+        "CD8A"
+      ],
+      "NK_cell": [
+        "NKG7",
+        "GNLY",
+        "KLRD1",
+        "PRF1",
+        "GZMB"
+      ],
+      "B_cell": [
+        "CD79A",
+        "MS4A1",
+        "CD37",
+        "CD74",
+        "HLA-DRA"
+      ],
+      "Plasma_cell": [
+        "MZB1",
+        "JCHAIN",
+        "SDC1",
+        "DERL3",
+        "IGKC"
+      ],
+      "Myeloid": [
+        "LST1",
+        "TYROBP",
+        "FCER1G",
+        "CTSS",
+        "AIF1"
+      ],
+      "Macrophage": [
+        "C1QA",
+        "C1QB",
+        "C1QC",
+        "APOC1",
+        "CD68"
+      ],
+      "Dendritic": [
+        "FCER1A",
+        "CD1C",
+        "CLEC10A",
+        "ITGAX"
+      ],
+      "Fibroblast": [
+        "COL1A1",
+        "COL1A2",
+        "COL3A1",
+        "DCN",
+        "COL6A1"
+      ],
+      "Myofibroblast": [
+        "COL1A1",
+        "ACTA2",
+        "TAGLN",
+        "POSTN",
+        "FAP"
+      ],
+      "Endothelial": [
+        "VWF",
+        "PECAM1",
+        "EMCN",
+        "KDR",
+        "ENG"
+      ],
+      "Pericyte": [
+        "RGS5",
+        "CSPG4",
+        "MCAM",
+        "PDGFRB",
+        "DES"
+      ]
+    }
+  }
+}

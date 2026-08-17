@@ -2,6 +2,8 @@
 
 [![Python](https://img.shields.io/badge/python-3.10%2B-3776AB)](https://www.python.org/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![Data: CC BY 4.0](https://img.shields.io/badge/demo%20data-CC%20BY%204.0-green.svg)](https://www.10xgenomics.com/support/software/xenium-onboard-analysis/latest/resources/xenium-example-data)
 
+**Reviewer-ready deliverable:** [Open or download the self-contained Prime 5K QC + analysis report](Xenium_Prime5K_QC_Analysis_Report.html).
+
 A release-ready, hands-on Xenium project that treats quality control as a chain of evidence: **decoding → transcript assignment → segmentation → cell profiles → spatial biology**. It produces auditable tables, publication-ready figures, and an editable presentation.
 
 ## Why this is more than a standard single-cell workflow

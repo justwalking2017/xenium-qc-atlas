@@ -12,5 +12,7 @@ __pycache__/
 .DS_Store
 build/
 *.pptx.inspect.ndjson
+Xenium_Breast_Cancer_Full_Analysis.pptx
+Xenium_QC_Atlas_Showcase.pptx
 Xenium_QC_Atlas_Showcase/
 agent.md

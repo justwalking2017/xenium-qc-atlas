@@ -8,6 +8,7 @@ import yaml
 from .analysis import analyze
 from .io import load_xenium, materialize_input
 from .plotting import make_figures
+from .report import build_html_report
 
 
 def main():
@@ -19,8 +20,8 @@ def main():
     root = materialize_input(cfg["input_zip"], out / "input_cache")
     result = analyze(*load_xenium(root), cfg)
     make_figures(result, out, cfg["dataset_kind"])
-    print(f"Completed: {out}")
+    report = build_html_report(result, out, cfg)
+    print(f"Completed: {out}\nReport: {report}")
 
 
 if __name__ == "__main__": main()
-

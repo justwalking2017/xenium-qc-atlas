@@ -53,7 +53,9 @@ def summarize_transcripts(path: str | Path, batch_size: int = 1_000_000) -> dict
     available = set(pf.schema_arrow.names)
     columns = [c for c in ("cell_id", "qv") if c in available]
     total = assigned = q20_total = q20_assigned = 0
-    qv_chunks = []
+    # QV is integer-like in Xenium output. A histogram avoids retaining tens of
+    # millions of values merely to calculate a median.
+    qv_hist = np.zeros(256, dtype=np.int64)
     for batch in pf.iter_batches(columns=columns, batch_size=batch_size):
         frame = batch.to_pandas()
         n = len(frame); total += n
@@ -63,18 +65,22 @@ def summarize_transcripts(path: str | Path, batch_size: int = 1_000_000) -> dict
         else:
             is_assigned = np.ones(n, dtype=bool)
         if "qv" in frame:
-            qv = frame["qv"].to_numpy()
-            qv_chunks.append(qv.astype(np.float32, copy=False))
+            qv = frame["qv"].to_numpy(dtype=np.float32, copy=False)
             high = qv >= 20
             q20_total += int(high.sum())
             q20_assigned += int((high & is_assigned).sum())
-    qv_all = np.concatenate(qv_chunks) if qv_chunks else np.array([], dtype=float)
+            bins = np.clip(np.rint(qv), 0, 255).astype(np.uint8)
+            qv_hist += np.bincount(bins, minlength=256)
+    if qv_hist.sum():
+        median_qv = float(np.searchsorted(np.cumsum(qv_hist), (qv_hist.sum() + 1) // 2))
+    else:
+        median_qv = np.nan
     return {
         "transcripts_total": int(total),
         "assignment_rate_all": assigned / total if total else np.nan,
         "assignment_rate_q20": q20_assigned / q20_total if q20_total else np.nan,
         "q20_fraction": q20_total / total if total else np.nan,
-        "median_qv": float(np.median(qv_all)) if len(qv_all) else np.nan,
+        "median_qv": median_qv,
     }
 
 

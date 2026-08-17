@@ -1,0 +1,33 @@
+{
+  "cells_total": 699110,
+  "cells_pass_qc": 504483,
+  "pass_rate": 0.7216074723577119,
+  "median_transcripts": 49.0,
+  "median_features": 46.0,
+  "median_control_fraction": 0.0,
+  "transcript_assignment_rate": 0.8826542069605049,
+  "q20_assignment_rate": 0.8903082480156902,
+  "q20_transcript_fraction": 0.8523282250219789,
+  "transcripts_total": 109411890,
+  "median_qv": 40.0,
+  "segmentation_outliers": 43186,
+  "density_outliers": 120491,
+  "genes_in_panel": 5101,
+  "cells_used_for_embedding_fit": 100000,
+  "cells_used_for_spatial_graph": 200000,
+  "unresolved_fraction": 0.35631924167910517,
+  "xoa_metrics": {
+    "fraction_transcripts_decoded_q20": 0.86384960907123,
+    "adjusted_negative_control_probe_rate": 0.0013769231414278,
+    "adjusted_negative_control_codeword_rate": 0.0002238943072041,
+    "adjusted_genomic_control_probe_rate": 0.0336418665786915,
+    "estimated_number_of_false_positive_transcripts_per_cell": 0.148846962566692,
+    "fraction_transcripts_assigned": 0.892833669315011,
+    "fraction_empty_cells": 0.0219021327115905,
+    "segmented_cell_stain_frac": 0.938979559725937,
+    "segmented_cell_boundary_frac": 0.143927278968975,
+    "segmented_cell_interior_frac": 0.795052280756962,
+    "segmented_cell_nuc_expansion_frac": 0.0610204402740627
+  },
+  "dataset_kind": "biological_showcase"
+}

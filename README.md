@@ -4,7 +4,7 @@
 
 **Reviewer-ready deliverable:** [Open or download the self-contained Prime 5K QC + analysis report](Xenium_Prime5K_QC_Analysis_Report.html).
 
-A release-ready, hands-on Xenium project that treats quality control as a chain of evidence: **decoding → transcript assignment → segmentation → cell profiles → spatial biology**. It produces auditable tables, publication-ready figures, and an editable presentation.
+A release-ready, hands-on Xenium project that treats quality control as a chain of evidence: **decoding → transcript assignment → segmentation → cell profiles → spatial biology**. It produces auditable tables, publication-ready figures, and a self-contained HTML report.
 
 ## Why this is more than a standard single-cell workflow
 
@@ -19,47 +19,77 @@ Xenium is targeted and image-based. A credible analysis therefore cannot rely on
 
 The paper suggested in the project brief, **Moses et al., Nature Methods (2024)**, benchmarks sequencing-based spatial methods. Its principles—orthogonal QC axes, sensitivity/specificity, spatial concordance, and reproducibility—are useful, but the implementation here adapts them to Xenium-specific decoded transcripts and cell segmentation. Platform-specific choices are further grounded in Janesick et al. (2023) and Goods et al. (2025).
 
-## Two execution profiles
+## Analysis profiles
 
-| Profile | Purpose | Size | Biological claims |
-|---|---|---:|---|
-| `demo_mouse_ileum.yml` | Official 10x trimmed output; tests XOA formats and the complete code path | ~12 MB | **No** — only a few artificial patches |
-| `full_human_breast.yml` | Complete FFPE breast section; tumor–myoepithelial boundary and immune niches | tens of GB | Yes, with pathology/replicate validation |
+| Profile | Role | Dataset / panel | Biological interpretation |
+|---|---|---|---|
+| `prime5k_human_breast.yml` | **Primary reviewer-ready analysis** | Independent FFPE breast cancer specimen; Prime 5K Human Pan Tissue & Pathways + 100 custom genes | Main QC, annotation, neighborhood, Moran's I, and segmentation showcase |
+| `full_human_breast.yml` | Legacy Xenium v1 comparison | Independent FFPE breast IDC specimen; smaller Xenium v1 breast panel + add-on genes | Historical workflow and panel-depth comparison; not a replicate of the Prime 5K specimen |
+| `demo_mouse_ileum.yml` | Format-test fixture only | Artificially trimmed Prime 5K mouse ileum patches (~12 MB) | **No biological claims**; validates XOA file compatibility and the code path |
+
+> **Important:** the two breast profiles are independent public 10x datasets generated with different panels and XOA versions. Their cell counts and QC metrics are not repeated measurements of the same specimen and should not be compared as replicates.
 
 ## Quick start
 
-For the complete Prime 5K breast-cancer workflow, download and run:
+### Primary workflow: Prime 5K breast cancer
+
+Create the environment, download the complete public dataset, and run:
 
 ```powershell
+conda env create -f environment.yml
+conda activate xenium-showcase
 .\scripts\download_prime5k_breast.ps1
-conda run -n xenium-qc-atlas xenium-showcase --config configs\prime5k_human_breast.yml
+xenium-showcase --config configs\prime5k_human_breast.yml
 ```
 
 This profile downloads the official 38.17 GiB output bundle, selectively extracts
 the files required for computation, and writes a self-contained QC + analysis
 report to `results/human_breast_prime5k/xenium_prime5k_qc_analysis_report.html`.
 
+Expected outputs:
+
+```text
+results/human_breast_prime5k/
+├── figures/01_cell_qc.png ... 10_segmentation_qc.png
+├── qc_summary.json
+├── cells_with_qc_and_labels.csv.gz
+├── spatial_gene_statistics.csv
+├── neighborhood_enrichment_z.csv
+└── xenium_prime5k_qc_analysis_report.html
+```
+
+### Optional format test
+
+Use the tiny mouse ileum fixture only to verify installation and file compatibility:
+
 ```powershell
-conda env create -f environment.yml
-conda activate xenium-showcase
 powershell -ExecutionPolicy Bypass -File scripts/download_demo.ps1
 xenium-showcase --config configs/demo_mouse_ileum.yml
 ```
 
-Expected outputs:
+## Primary executed result: Prime 5K breast cancer
 
-```text
-results/<profile>/
-├── figures/01_cell_qc.png ... 06_embedding.png
-├── qc_summary.json
-├── cells_with_qc_and_labels.csv.gz
-├── spatial_gene_statistics.csv
-└── neighborhood_enrichment_z.csv
-```
+The complete 38.17 GiB 10x FFPE human breast cancer output bundle was downloaded, byte-verified, selectively extracted, and analyzed end to end:
 
-## Executed full breast-cancer run
+| Metric | Prime 5K result |
+|---|---:|
+| XOA cell objects | 699,110 |
+| Cells passing configured QC | 504,483 (72.2%) |
+| Gene-expression features | 5,101 |
+| Transcripts in transcript parquet | 109,411,890 |
+| Q20 transcript fraction | 85.2% |
+| Q20 transcript assignment | 89.0% |
+| Median gene transcripts / cell | 49 |
+| Median detected genes / cell | 46 |
+| Conservatively unresolved passing cells | 179,757 (35.6%) |
 
-The complete 10x FFPE human breast IDC output bundle was downloaded, CRC-validated, and analyzed end to end. The checked-in results were generated from the full biological sample, not the trimmed format fixture:
+The 72.2% pass rate is driven almost entirely by cell objects with fewer than 20 gene transcripts, not by elevated negative-control signal. `Unresolved` is an annotation-confidence outcome rather than a QC failure: most unresolved cells lack signal from the deliberately compact marker dictionary, while a smaller group has ambiguous top-two module scores.
+
+Spatially coherent candidate genes included `CA12`, `XBP1`, `RAB11FIP1`, `TSPAN13`, `ANKRD30A`, `CCND1`, `GATA3`, and `ESR1`. Neighborhood enrichment and Moran's I are treated as hypothesis-generating outputs that require pathology regions and patient-level validation.
+
+## Legacy comparison: Xenium v1 breast panel
+
+Before the Prime 5K upgrade, the workflow was executed on a separate 10x FFPE human breast IDC dataset using the smaller Xenium v1 breast panel. These metrics are retained to document project evolution and provide a panel-depth comparison:
 
 | Metric | Result |
 |---|---:|
@@ -75,7 +105,7 @@ Marker-guided annotation recovered 316,693 tumor epithelial, 133,590 fibroblast,
 
 The myoepithelial-proximity analysis is explicitly treated as a computational nearest-cell proxy. It is not a substitute for pathology-defined DCIS or invasive boundaries.
 
-Run the same full profile after downloading the official bundle:
+Run the legacy v1 profile after downloading its independent official bundle:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/download_full_breast.ps1
@@ -96,7 +126,7 @@ Thresholds are configuration values, not universal truths. For real cohorts, der
 
 ## Application story: breast cancer boundary ecology
 
-The full profile is designed around a question Xenium is unusually good at answering: **how myoepithelial integrity and immune/stromal neighborhoods change across DCIS-to-invasive boundaries**. The analysis can be extended with:
+The primary Prime 5K profile is designed around a question Xenium is unusually good at answering: **how myoepithelial integrity and immune/stromal neighborhoods change across DCIS-to-invasive boundaries**. The analysis can be extended with:
 
 1. pathology-defined DCIS, invasive, and normal-adjacent regions;
 2. distance-to-boundary gradients for ACTA2/KRT15 myoepithelial cells;

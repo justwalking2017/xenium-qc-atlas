@@ -6,6 +6,17 @@
 
 A release-ready, hands-on Xenium project that treats quality control as a chain of evidence: **decoding → transcript assignment → segmentation → cell profiles → spatial biology**. It produces auditable tables, publication-ready figures, and a self-contained HTML report.
 
+## Production engineering features
+
+- **Configurable workflow:** YAML profiles control QC rules, anomaly features, sampling, clustering, annotation and spatial permutations; `--validate-only` checks the profile and input before a long run.
+- **Automatic QC:** transparent transcript, feature and control rules emit per-cell failure reasons.
+- **Anomaly detection:** a seeded Isolation Forest screens joint yield, control, geometry and density abnormalities. Calls are advisory unless `qc.exclude_anomalies: true` is explicit.
+- **Tests and CI:** unit and synthetic end-to-end tests run on Python 3.10–3.12; CI also builds and smoke-tests the container.
+- **Containerization:** code and dependencies are packaged while public/raw data are mounted at runtime.
+- **Structured metadata:** each run records dataset identity, resolved configuration, software versions, git commit and dirty-tree state under a versioned JSON contract.
+- **Model evaluation:** annotation score/margin distributions, resolved fraction and cluster-label NMI are separated from biological results.
+- **Failure-mode register:** assay, segmentation, annotation, anomaly-model, spatial-statistics and study-design risks include symptoms and mitigations.
+
 ## Why this is more than a standard single-cell workflow
 
 Xenium is targeted and image-based. A credible analysis therefore cannot rely only on total counts and genes per cell. This project checks:
@@ -42,6 +53,12 @@ conda activate xenium-showcase
 xenium-showcase --config configs\prime5k_human_breast.yml
 ```
 
+Validate the workflow and archive without running the expensive analysis:
+
+```powershell
+xenium-showcase --config configs\prime5k_human_breast.yml --validate-only
+```
+
 This profile downloads the official 38.17 GiB output bundle, selectively extracts
 the files required for computation, and writes a self-contained QC + analysis
 report to `results/human_breast_prime5k/xenium_prime5k_qc_analysis_report.html`.
@@ -52,11 +69,23 @@ Expected outputs:
 results/human_breast_prime5k/
 ├── figures/01_cell_qc.png ... 10_segmentation_qc.png
 ├── qc_summary.json
+├── model_evaluation.json
+├── run_metadata.json
 ├── cells_with_qc_and_labels.csv.gz
 ├── spatial_gene_statistics.csv
 ├── neighborhood_enrichment_z.csv
 └── xenium_prime5k_qc_analysis_report.html
 ```
+
+### Container
+
+```powershell
+docker build -t xenium-qc-atlas:0.3.0 .
+```
+
+Mount data and result directories at runtime and provide a config whose input/output paths match those mount points. Raw data, generated results, PDFs and slide decks are deliberately excluded from the image.
+
+Read the [complete limitations and failure-mode register](docs/limitations_and_failure_modes.md) before interpreting anomaly, annotation or spatial-statistics outputs.
 
 ### Optional format test
 

@@ -11,6 +11,9 @@ from sklearn.decomposition import TruncatedSVD
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import normalize
 
+from .evaluation import evaluate_models
+from .qc import automatic_qc
+
 
 CONTROL_PREFIXES = ("NegControl", "NegativeControl", "BLANK", "Unassigned")
 NEGATIVE_FEATURE_TYPES = frozenset({"Negative Control Probe", "Negative Control Codeword"})
@@ -25,6 +28,7 @@ class AnalysisResult:
     neighborhood: pd.DataFrame
     qc_summary: dict
     marker_scores: pd.DataFrame
+    model_evaluation: dict
 
 
 def _pick(df: pd.DataFrame, *candidates: str) -> str:
@@ -60,15 +64,21 @@ def analyze(cells, transcript_qc, matrix, barcodes, genes, feature_types, metric
     cells["genomic_control_fraction"] = genomic / np.maximum(totals + genomic, 1)
     if "cell_area" in cells.columns:
         cells["transcripts_per_um2"] = totals / cells["cell_area"].to_numpy().clip(min=1e-6)
-    pass_qc = (totals >= cfg["min_transcripts"]) & (detected >= cfg["min_features"]) & (cells["control_fraction"].to_numpy() <= cfg["max_control_fraction"])
+    if {"cell_area", "nucleus_area"}.issubset(cells.columns):
+        cells["nucleus_cell_area_ratio"] = cells["nucleus_area"] / cells["cell_area"].clip(lower=1e-6)
+    qc_result = automatic_qc(cells, cfg, int(cfg["random_seed"]))
+    pass_qc = qc_result.pass_rules & (~qc_result.anomaly if cfg.get("qc", {}).get("exclude_anomalies", False) else True)
     cells["pass_qc"] = pass_qc
+    cells["qc_rule_pass"] = qc_result.pass_rules
+    cells["multivariate_anomaly"] = qc_result.anomaly
+    cells["anomaly_score"] = qc_result.anomaly_score
+    cells["qc_failure_reason"] = qc_result.reasons
 
     # Area-ratio and density flags expose segmentation failure modes rather than hiding them.
     if {"cell_area", "nucleus_area"}.issubset(cells.columns):
-        cells["nucleus_cell_area_ratio"] = cells["nucleus_area"] / cells["cell_area"].clip(lower=1e-6)
-        lo, hi = cells.loc[pass_qc, "nucleus_cell_area_ratio"].quantile([0.01, 0.99])
+        lo, hi = cells.loc[qc_result.pass_rules, "nucleus_cell_area_ratio"].quantile([0.01, 0.99])
         cells["segmentation_outlier"] = ~cells["nucleus_cell_area_ratio"].between(lo, hi)
-        density = cells.loc[pass_qc, "transcripts_per_um2"]
+        density = cells.loc[qc_result.pass_rules, "transcripts_per_um2"]
         dlo, dhi = density.quantile([0.01, 0.99])
         cells["density_outlier"] = ~cells["transcripts_per_um2"].between(dlo, dhi)
     else:
@@ -169,6 +179,7 @@ def analyze(cells, transcript_qc, matrix, barcodes, genes, feature_types, metric
         "cells_used_for_embedding_fit": int(fit_n),
         "cells_used_for_spatial_graph": int(graph_n),
         "unresolved_fraction": float(cq["cell_type"].eq("Unresolved").mean()),
+        "automatic_qc": qc_result.metadata,
     }
     # Preserve a focused set of vendor metrics as an orthogonal audit trail.
     if len(metrics):
@@ -185,4 +196,5 @@ def analyze(cells, transcript_qc, matrix, barcodes, genes, feature_types, metric
             key: float(metrics.iloc[0][key]) for key in vendor_keys
             if key in metrics.columns and pd.notna(metrics.iloc[0][key])
         }
-    return AnalysisResult(cells, embedding, graph, gene_stats, neighborhood, qc_summary, scores)
+    model_evaluation = evaluate_models(cells, scores, qc_result.metadata)
+    return AnalysisResult(cells, embedding, graph, gene_stats, neighborhood, qc_summary, scores, model_evaluation)

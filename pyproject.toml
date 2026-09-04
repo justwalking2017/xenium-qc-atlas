@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "xenium-qc-atlas"
-version = "0.1.0"
+version = "0.3.0"
 description = "Transcript-, segmentation-, and biology-aware QC plus spatial neighborhood analysis for Xenium."
 requires-python = ">=3.10"
 dependencies = [
@@ -24,3 +24,5 @@ xenium-showcase = "xenium_showcase.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]

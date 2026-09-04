@@ -7,6 +7,27 @@ random_seed: 17
 min_transcripts: 20
 min_features: 10
 max_control_fraction: 0.03
+qc:
+  mode: hybrid
+  exclude_anomalies: false
+  rules:
+    min_transcripts: 20
+    min_features: 10
+    max_control_fraction: 0.03
+  anomaly:
+    enabled: true
+    method: isolation_forest
+    contamination: 0.02
+    n_estimators: 200
+    max_samples: 10000
+    max_fit_cells: 100000
+    features:
+      - computed_transcripts
+      - computed_features
+      - control_fraction
+      - cell_area
+      - nucleus_cell_area_ratio
+      - transcripts_per_um2
 min_annotation_score: 0.05
 min_annotation_margin: 0.01
 max_fit_cells: 100000

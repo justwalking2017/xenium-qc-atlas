@@ -1,0 +1,13 @@
+.git
+.github
+data
+results
+output
+tmp
+*.zip
+*.pdf
+*.pptx
+__pycache__
+.pytest_cache
+.matplotlib
+

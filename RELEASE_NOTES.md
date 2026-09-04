@@ -1,3 +1,14 @@
+# v0.3.0 — Automated QC and production workflow
+
+- configurable hybrid rule-based QC and Isolation Forest anomaly screening;
+- per-cell QC reason, anomaly flag and continuous anomaly score;
+- versioned structured run metadata and JSON Schema;
+- internal annotation/model diagnostics with explicit non-validation caveats;
+- expanded unit and synthetic end-to-end tests plus Python-version CI matrix;
+- Docker build and container smoke test in CI;
+- complete assay, segmentation, model, spatial and inference failure-mode register;
+- automatic anomaly map and report sections for QC, evaluation and limitations.
+
 # v0.2.0 — Full breast-cancer biological run
 
 This release upgrades the project from a technical smoke test to a complete biological Xenium analysis. It adds:

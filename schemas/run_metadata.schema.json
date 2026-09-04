@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/justwalking2017/xenium-qc-atlas/schemas/run_metadata.schema.json",
+  "title": "Xenium QC Atlas run metadata",
+  "type": "object",
+  "required": ["schema_version", "run", "dataset", "workflow", "software"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "run": {
+      "type": "object",
+      "required": ["generated_utc", "project_name", "dataset_kind", "random_seed", "output_dir"]
+    },
+    "dataset": {"type": "object", "required": ["url", "input"]},
+    "workflow": {"type": "object", "required": ["config", "configuration"]},
+    "software": {
+      "type": "object",
+      "required": ["python", "platform", "numpy", "pandas", "scipy", "scikit_learn"]
+    }
+  },
+  "additionalProperties": true
+}
+

@@ -81,6 +81,16 @@ def make_figures(result, outdir, dataset_kind):
         ax[1].set(title="Nucleus-to-cell area ratio", xlabel="Nucleus area / cell area")
         fig.suptitle("Segmentation plausibility diagnostics"); _save(fig, figs / "10_segmentation_qc.png")
 
+    if "multivariate_anomaly" in c:
+        fig, ax = plt.subplots(figsize=(7.2, 5.4))
+        normal = cp[~cp["multivariate_anomaly"]]
+        flagged = cp[cp["multivariate_anomaly"]]
+        ax.scatter(normal[x], normal[y], s=point_size, color="#CBD5E1", linewidths=0, rasterized=True, label="Not flagged")
+        ax.scatter(flagged[x], flagged[y], s=max(point_size, 1), color="#DC2626", linewidths=0, rasterized=True, label="Multivariate anomaly")
+        ax.invert_yaxis(); ax.set_aspect("equal")
+        ax.set(title="Automatic multivariate anomaly screen", xlabel="x (µm)", ylabel="y (µm)")
+        ax.legend(frameon=False); _save(fig, figs / "11_anomaly_map.png")
+
     pd.crosstab(q["cluster"], q["cell_type"], normalize="index").to_csv(out / "cluster_cell_type_fraction.csv")
     q.groupby("cell_type")[["annotation_score", "annotation_margin"]].agg(["count", "median", "mean"]).to_csv(out / "annotation_confidence_by_type.csv")
 
@@ -88,3 +98,4 @@ def make_figures(result, outdir, dataset_kind):
     result.gene_stats.to_csv(out/"spatial_gene_statistics.csv",index=False)
     result.neighborhood.to_csv(out/"neighborhood_enrichment_z.csv")
     with (out/"qc_summary.json").open("w") as f: json.dump({**result.qc_summary,"dataset_kind":dataset_kind},f,indent=2)
+    with (out/"model_evaluation.json").open("w") as f: json.dump(result.model_evaluation, f, indent=2)
